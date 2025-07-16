@@ -2,30 +2,14 @@ import { useState } from "react";
 
 function App() {
   const [items, setItems] = useState([]);
-  const [quantity, setQuantity] = useState(0);
-  const [description, setDescription] = useState("");
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const item = {
-      quantity,
-      description,
-      id: Date.now(),
-      isPacked: false,
-    };
-
+  function handleAddItem(item) {
     setItems((items) => [...items, item]);
-    setQuantity(0);
-    setDescription([]);
   }
 
-  function handleQuantity(e) {
-    setQuantity(() => e.target.value);
-  }
-
-  function handleDescription(e) {
-    setDescription(() => e.target.value);
-  }
+  // function handleSort(e) {
+  //   console.log("sort", e.targ.value);
+  // }
 
   function handleStatus(id) {
     setItems((items) =>
@@ -41,13 +25,7 @@ function App() {
   return (
     <div className="app">
       <Logo />
-      <Form
-        handleSubmit={handleSubmit}
-        handleQuantity={handleQuantity}
-        handleDescription={handleDescription}
-        quantity={quantity}
-        description={description}
-      />
+      <Form handleAddItem={handleAddItem} />
       <PackingList
         items={items}
         handleStatus={handleStatus}
@@ -62,17 +40,26 @@ function Logo() {
   return <h1>🏝️ Far Away 🧳</h1>;
 }
 
-function Form({
-  handleSubmit,
-  handleDescription,
-  handleQuantity,
-  quantity,
-  description,
-}) {
+function Form({ handleAddItem }) {
+  const [quantity, setQuantity] = useState(0);
+  const [description, setDescription] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const item = {
+      quantity,
+      description,
+      id: Date.now(),
+      isPacked: false,
+    };
+
+    handleAddItem(item);
+  }
   return (
     <form className="add-form" onSubmit={handleSubmit}>
       <h3>What do you need for your 😍 trip?</h3>
-      <select value={quantity} onChange={handleQuantity}>
+      <select value={quantity} onChange={(e) => setQuantity(e.target.value)}>
         {Array.from({ length: 21 }, (_, index) => index + 1).map(
           (item, index) => (
             <option value={item} key={index}>
@@ -85,7 +72,7 @@ function Form({
         type="text"
         placeholder="Item..."
         value={description}
-        onChange={handleDescription}
+        onChange={(e) => setDescription(e.target.value)}
       />
       <button>Add</button>
     </form>
@@ -93,10 +80,28 @@ function Form({
 }
 
 function PackingList({ items, handleStatus, handleDelete }) {
+  const [sortBy, setSortBy] = useState("");
+
+  let sortedItems = items;
+
+  if (sortBy === "input") return sortedItems;
+
+  if (sortBy === "packed") {
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.isPacked) - Number(b.isPacked));
+  }
+
+  if (sortBy === "description") {
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  }
+
   return (
     <div className="list">
       <ul>
-        {items.map((item, index) => (
+        {sortedItems.map((item, index) => (
           <Item
             item={item}
             key={index}
@@ -105,12 +110,20 @@ function PackingList({ items, handleStatus, handleDelete }) {
           />
         ))}
       </ul>
+
+      <div className="action">
+        <select onChange={(e) => setSortBy(e.target.value)} value={sortBy}>
+          <option value="input">Sort by input number</option>
+          <option value="description">Sort by description</option>
+          <option value="packed">Sort by packed status</option>
+        </select>
+        <button>Clear list</button>
+      </div>
     </div>
   );
 }
 
 function Item({ item, handleStatus, handleDelete }) {
-  console.log("item", item);
   return (
     <li>
       <input
