@@ -1,15 +1,14 @@
-import { Children, useState } from "react";
-import Main from "./components/Main";
-import Navbar from "./components/Navbar";
-import { tempMovieData, tempWatchedData } from "./data/data";
-import Logo from "./components/Logo";
-import SearchInput from "./components/SearchInput";
-import WatchedBox from "./components/WatchedBox";
-import SearchResult from "./components/SearchResult";
-import MoviesList from "./components/MoviesList";
+import { useState } from "react";
 import Box from "./components/Box";
-import WatchedSummary from "./components/WatchedSummary";
+import Logo from "./components/Logo";
+import Main from "./components/Main";
+import MoviesList from "./components/MoviesList";
+import Navbar from "./components/Navbar";
+import SearchInput from "./components/SearchInput";
+import SearchResult from "./components/SearchResult";
 import WatchedMoviesList from "./components/WatchedMoviesList";
+import WatchedSummary from "./components/WatchedSummary";
+import { tempMovieData, tempWatchedData } from "./data/data";
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);

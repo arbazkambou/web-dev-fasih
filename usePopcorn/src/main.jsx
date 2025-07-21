@@ -1,10 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.jsx";
-import "./index.css";
+import RatingStar from "./components/RatingStar.jsx";
+// import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    {/* <App /> */}
+    <RatingStar color="#FFD700" size={50} />
   </StrictMode>
 );
