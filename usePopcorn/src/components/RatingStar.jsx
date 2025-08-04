@@ -1,8 +1,13 @@
 import { useState } from "react";
 import Star from "./Star";
 
-function RatingStar({ color = "#6741d9", size = "48px" }) {
-  const [stars, setStars] = useState(0);
+function RatingStar({
+  color = "#FFD700",
+  size = "48px",
+  maxRating = 10,
+  stars,
+  setStars,
+}) {
   const [hoveringStars, setHoveringStars] = useState(0);
 
   function handleSetStar(index) {
@@ -11,7 +16,7 @@ function RatingStar({ color = "#6741d9", size = "48px" }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {Array.from({ length: maxRating }).map((_, index) => (
           <Star
             key={index}
             index={index}

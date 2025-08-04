@@ -4,7 +4,7 @@ function Star({ index, handleSetStar, setHoveringStars, isFill, color, size }) {
       style={{ height: `${size}px`, width: `${size}px`, display: "block" }}
       onClick={() => handleSetStar(index + 1)}
       onMouseEnter={() => setHoveringStars(index + 1)}
-      onMouseLeave={() => setHoveringStars(0)}
+      onMouseLeave={() => setHoveringStars(null)}
     >
       {isFill ? (
         <svg

@@ -2,65 +2,53 @@ import { useEffect, useState } from "react";
 import Box from "./components/Box";
 import Logo from "./components/Logo";
 import Main from "./components/Main";
+import MovieDetails from "./components/MovieDetail";
 import MoviesList from "./components/MoviesList";
 import Navbar from "./components/Navbar";
 import SearchInput from "./components/SearchInput";
 import SearchResult from "./components/SearchResult";
 import WatchedMoviesList from "./components/WatchedMoviesList";
 import WatchedSummary from "./components/WatchedSummary";
-import { tempWatchedData } from "./data/data";
-import MovieDetails from "./components/MovieDetail";
-
-export const apiKey = "210ec08b";
+import { useMovies } from "./hooks/useMovies";
+import { useLocaleStorage } from "./hooks/useLocaleStorage";
 
 export default function App() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const { error, isLoading, movies } = useMovies(query);
+  const [watched, setWatched] = useState(useLocaleStorage("watchedMovies", []));
+
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   function handleSelectedMovie(id) {
     setSelectedMovie((prevId) => (id === prevId ? null : id));
   }
 
+  function handleAddWatch(movie) {
+    setWatched((currentMovies) => [...currentMovies, movie]);
+  }
+
+  function handleCloseMovieDetails() {
+    setSelectedMovie(null);
+  }
+
   useEffect(
     function () {
-      async function fetchMovies() {
-        try {
-          setError("");
-          setIsLoading(true);
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`
-          );
-
-          if (!res.ok) {
-            throw new Error("Something went wrong");
-          }
-
-          const data = await res.json();
-
-          if (data.Response === "False") {
-            throw new Error("Movies not found");
-          }
-
-          // console.log("data", data);
-          setMovies(data.Search);
-          setIsLoading(false);
-        } catch (error) {
-          console.log(error.message);
-        }
-      }
-
-      if (query.length > 3) {
-        fetchMovies();
-      } else {
-        setError("Try searching something");
-      }
+      localStorage.setItem("watchedMovies", JSON.stringify(watched));
     },
-    [query]
+    [watched]
   );
+
+  useEffect(() => {
+    const callback = function (e) {
+      console.log("press", e.key);
+      if (e.key === "Escape") {
+        handleCloseMovieDetails();
+      }
+    };
+    document.addEventListener("keydown", callback);
+
+    return () => document.removeEventListener("keydown", callback);
+  }, []);
 
   return (
     <>
@@ -85,6 +73,9 @@ export default function App() {
             <MovieDetails
               setSelectedMovie={setSelectedMovie}
               selectedMovie={selectedMovie}
+              handleAddWatch={handleAddWatch}
+              handleCloseMovieDetails={handleCloseMovieDetails}
+              watched={watched}
             />
           ) : (
             <>

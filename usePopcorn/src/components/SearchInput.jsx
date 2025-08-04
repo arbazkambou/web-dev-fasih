@@ -1,4 +1,14 @@
+import { useEffect, useRef } from "react";
+
 function SearchInput({ query, setQuery }) {
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    // const searchInput = document.querySelector(".search");
+    // searchInput.focus();
+    searchInputRef.current.focus();
+  }, []);
+
   return (
     <input
       className="search"
@@ -6,6 +16,7 @@ function SearchInput({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={searchInputRef}
     />
   );
 }
