@@ -1,18 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { addItem, getQuantityById } from '../../redux/slices/cartSlice';
 import Button from '../../ui/Button';
 import { formatCurrency } from '../../utils/helpers';
-import {
-  addItem,
-  decQuantity,
-  deleteItem,
-  getQuantityById,
-  incQuantity,
-} from '../../redux/slices/cartSlice';
+import DeleteItemButton from '../cart/DeleteItemButton';
+import IncDecButtons from '../cart/IncDecButtons';
 
 function MenuItem({ pizza }) {
   const { name, unitPrice, ingredients, soldOut, imageUrl, id } = pizza;
-
-  const cart = useSelector((state) => state.cart.cart);
 
   const cartQuantity = useSelector(getQuantityById(id));
 
@@ -22,6 +16,7 @@ function MenuItem({ pizza }) {
 
   function handleAddItem() {
     const newPizza = {
+      pizzaId: id,
       id,
       name,
       quantity: 1,
@@ -33,18 +28,6 @@ function MenuItem({ pizza }) {
     };
 
     dispatch(addItem(newPizza));
-  }
-
-  function handleDeleteItem(id) {
-    dispatch(deleteItem(id));
-  }
-
-  function handleInc(id) {
-    dispatch(incQuantity(id));
-  }
-
-  function handleDec(id) {
-    dispatch(decQuantity(id));
   }
 
   return (
@@ -76,19 +59,8 @@ function MenuItem({ pizza }) {
 
           {isInCart && (
             <div className="flex items-center justify-center gap-2">
-              <div className="flex items-center gap-2">
-                <Button type={'small'} onClick={() => handleDec(id)}>
-                  -
-                </Button>
-                <p>{cartQuantity}</p>
-                <Button type={'small'} onClick={() => handleInc(id)}>
-                  +
-                </Button>
-              </div>
-
-              <Button type={'small'} onClick={() => handleDeleteItem(id)}>
-                Delete Item
-              </Button>
+              <IncDecButtons id={id} quantity={cartQuantity} />
+              <DeleteItemButton id={id} />
             </div>
           )}
         </div>

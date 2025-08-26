@@ -1,32 +1,75 @@
-import axios from 'axios';
+import { getAddress } from './apiGeocoding';
 
 const API_URL = 'https://react-fast-pizza-api.onrender.com/api';
 
 export async function getMenu() {
-  try {
-    const response = await fetch(`${API_URL}/menu`);
+  const res = await fetch(`${API_URL}/menu`);
 
-    if (!response.ok) {
-      console.error(await response.text());
-    }
-    const data = await response.json();
+  if (!res.ok) throw Error('Failed getting menu');
 
-    data.time = Date.now();
-
-    return data;
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  const { data } = await res.json();
+  return data;
 }
 
 export async function getOrder(id) {
-  await axios.get(`${API_URL}/order/${id}`);
+  const res = await fetch(`${API_URL}/order/${id}`);
+  if (!res.ok) throw Error(`Couldn't find order #${id}`);
+
+  const { data } = await res.json();
+  return data;
 }
 
 export async function createOrder(newOrder) {
-  await axios.post(`${API_URL}/order`, { newOrder });
+  try {
+    const res = await fetch(`${API_URL}/order`, {
+      method: 'POST',
+      body: JSON.stringify(newOrder),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) throw Error();
+    const { data } = await res.json();
+    return data;
+  } catch {
+    throw Error('Failed creating your order');
+  }
 }
 
 export async function updateOrder(id, updateObj) {
-  await axios.patch(`${API_URL}/order/${id}`, { updateObj });
+  try {
+    const res = await fetch(`${API_URL}/order/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateObj),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!res.ok) throw Error();
+
+    return true;
+  } catch (err) {
+    throw Error('Failed updating your order');
+  }
+}
+
+function getPosition() {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+}
+
+export async function fetchUserLocation() {
+  const positionObj = await getPosition();
+  const position = {
+    latitude: positionObj.coords.latitude,
+    longitude: positionObj.coords.longitude,
+  };
+
+  const addressObj = await getAddress(position);
+  const address = `${addressObj?.locality}, ${addressObj?.city} ${addressObj?.postcode}, ${addressObj?.countryName}`;
+
+  return { position, address };
 }

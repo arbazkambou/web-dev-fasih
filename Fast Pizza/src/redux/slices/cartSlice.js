@@ -46,6 +46,8 @@ export const { addItem, deleteItem, incQuantity, decQuantity } =
 
 export const cartReducer = cartSlice.reducer;
 
+export const getCartState = (state) => state.cart.cart;
+
 export const getQuantityById = (id) => (state) =>
   state.cart.cart.find((item) => item.id === id)?.quantity ?? 0;
 
