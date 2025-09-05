@@ -1,0 +1,32 @@
+1. What is React?
+2. Components
+3. What is JSX and rules of JSX?
+4. Props 
+   -Immutability
+   -One way data flow
+
+5. What is State in React?
+6. Mechanics of State and State management
+7. Derived States
+8. State vs Props
+9. Children and Key Prop
+10. How events work in react
+11. Component life cycle
+12. React hooks and there rules
+   -useEffect
+   -useState
+   -useRef
+   -useMemo
+   -useCallback
+   -useContext
+13. Forms and Form handling
+14. Routing with react router
+15. Global State Management
+   -Redux Toolkit
+   -Context Api
+16. Remote State Management
+   -React Query
+17. Tailwind CSS
+18. Typescript
+19. Shadcn UI
+
