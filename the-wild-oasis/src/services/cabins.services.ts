@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { CabinInsert } from "@/types/cabins.types";
 
 export async function getAllCabins() {
   try {
@@ -27,6 +28,25 @@ export async function deleteCabin(id: number) {
     }
 
     return "Cabin has been successfully deleted";
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Error occured while fetching cabins");
+    }
+  }
+}
+
+export async function addCabin(newCabin: CabinInsert) {
+  try {
+    const { error } = await supabase
+      .from("cabins")
+      .insert([{ ...newCabin, image: newCabin.name }])
+      .select();
+
+    if (error) {
+      throw new Error(error.message);
+    }
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

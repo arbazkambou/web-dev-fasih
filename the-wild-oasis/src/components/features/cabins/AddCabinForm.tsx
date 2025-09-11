@@ -1,58 +1,163 @@
-import { useForm } from "react-hook-form";
+"use client";
 
-type FomSchema = {
-  name: string;
-  description: string;
-};
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  addCabinFormSchema,
+  AddCabinInputsType,
+} from "@/lib/zod-schemas/cabins.schemas";
+import { addCabin } from "@/services/cabins.services";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 function AddCabinForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<FomSchema>({
+  const queryClient = useQueryClient();
+  // 1. Define your form.
+  const form = useForm<AddCabinInputsType>({
+    resolver: zodResolver(addCabinFormSchema as any),
     defaultValues: {
-      description: "fasieh",
-      name: "kkkk",
+      description: "",
+      discount: 0,
+      maxCapacity: 0,
+      name: "",
+      regularPrice: 0,
     },
   });
 
-  console.log("formState", errors);
+  const { mutate: addCabinApi, isPending: isCabinAdding } = useMutation({
+    mutationFn: addCabin,
+    mutationKey: ["add-cabin"],
+    onSuccess: (message) => {
+      toast.success(message);
+      queryClient.invalidateQueries({ queryKey: ["cabins"] });
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
-  function onSubmit(value: FomSchema) {
-    console.log("data", value);
-    reset();
+  // 2. Define a submit handler.
+  function onSubmit(values: AddCabinInputsType) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+
+    // addCabinApi({ ...values, image: "" });
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        type="text"
-        {...register("name", {
-          required: "Please enter cabin name",
-          minLength: { value: 3, message: "Please enter valid name" },
-        })}
-        placeholder="enter cabin name"
-      />
-      {errors && errors.name && (
-        <p className="text-destructive">{errors.name.message}</p>
-      )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cabin Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter cabin name"
+                  {...field}
+                  disabled={isCabinAdding}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="maxCapacity"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Capacity</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter cabin capacity"
+                  {...field}
+                  type="number"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="regularPrice"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter cabin price"
+                  {...field}
+                  type="number"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="discount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Discount</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter cabin discount" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cabin Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter cabin description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field: { onChange, ref } }) => (
+            <FormItem>
+              <FormLabel>Cabin Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Enter cabin description"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onChange(e.target.files?.[0])}
+                  ref={ref}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <input
-        type="text"
-        {...register("description", {
-          required: "Please enter description",
-          minLength: { value: 10, message: "Please enter description" },
-        })}
-        placeholder="enter cabin description"
-      />
-      {errors && errors.description && (
-        <p className="text-destructive">{errors.description.message}</p>
-      )}
-
-      <button type="submit">Submit</button>
-    </form>
+        <Button type="submit" disabled={isCabinAdding}>
+          {isCabinAdding ? "Procesing..." : "Add Cabin"}
+        </Button>
+      </form>
+    </Form>
   );
 }
 
