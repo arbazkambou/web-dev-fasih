@@ -20,11 +20,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-function AddCabinForm() {
+function AddCabinForm({
+  setShow,
+}: {
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const queryClient = useQueryClient();
-  // 1. Define your form.
   const form = useForm<AddCabinInputsType>({
-    resolver: zodResolver(addCabinFormSchema as any),
+    resolver: zodResolver(addCabinFormSchema),
     defaultValues: {
       description: "",
       discount: 0,
@@ -40,22 +43,18 @@ function AddCabinForm() {
     onSuccess: (message) => {
       toast.success(message);
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
+      setShow(false);
     },
     onError: (err) => toast.error(err.message),
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: AddCabinInputsType) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-
-    // addCabinApi({ ...values, image: "" });
+    addCabinApi({ ...values });
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="name"

@@ -6,10 +6,16 @@ export const addCabinFormSchema = z
       .string()
       .min(3, "Please enter valid name")
       .max(20, "Please enter name upto 20 characters"),
-    maxCapacity: z.coerce.number().min(1).max(20),
+    maxCapacity: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
 
-    regularPrice: z.coerce.number().min(1),
-    discount: z.coerce.number().default(0),
+    regularPrice: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
+    discount: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
     description: z
       .string()
       .min(5, "Please enter valid description")
