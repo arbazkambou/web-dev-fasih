@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { CabinDuplicate, CabinInsert } from "@/types/cabins.types";
+import { CabinDuplicate, CabinEdit, CabinInsert } from "@/types/cabins.types";
 
 export async function getAllCabins() {
   try {
@@ -108,6 +108,72 @@ export async function dupicateCabin(newCabin: CabinDuplicate) {
       throw new Error(error.message);
     } else {
       throw new Error("Error occured while fetching cabins");
+    }
+  }
+}
+
+export async function editCabin({
+  cabinId,
+  existingCabin,
+}: {
+  cabinId: number;
+  existingCabin: CabinEdit;
+}) {
+  try {
+    const {
+      image,
+      imageUrl,
+      description,
+      discount,
+      maxCapacity,
+      name,
+      regularPrice,
+    } = existingCabin;
+    //1. Checik if user send a new image
+    let publicUrl;
+    if (image && imageUrl) {
+      const imagePath = imageUrl.split("/storage/v1/object/public/images/")[1];
+      const { error: deleteError } = await supabase.storage
+        .from("images")
+        .remove([imagePath]);
+
+      if (deleteError) {
+        throw new Error(deleteError.message);
+      }
+      const newImagePath = `${Date.now()}-${image.name}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(newImagePath, image);
+
+      if (uploadError) {
+        throw new Error(uploadError.message);
+      }
+
+      publicUrl = supabase.storage.from("images").getPublicUrl(uploadData.path);
+    }
+
+    const { error } = await supabase
+      .from("cabins")
+      .update({
+        description,
+        discount,
+        name,
+        maxCapacity,
+        regularPrice,
+        image: publicUrl ? publicUrl.data.publicUrl : imageUrl,
+      })
+      .eq("id", cabinId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    return "Cabin has been successfully edited";
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("Something went wrong");
     }
   }
 }

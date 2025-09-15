@@ -25,6 +25,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EllipsisVertical } from "lucide-react";
 import AddCabinDialog from "./AddCabinDialog";
 import { toast } from "sonner";
+import EditCabinDialog from "./EditCabinDialog";
 
 const cabinsColumns = [
   "Image",
@@ -133,7 +134,9 @@ function CabinsTable({ cabins }: { cabins: Cabin[] }) {
                         >
                           Duplicate
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <EditCabinDialog existingCabin={cabin} />
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => {
                             deleteCabinApi(cabin.id);

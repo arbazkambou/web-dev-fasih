@@ -28,3 +28,32 @@ export const addCabinFormSchema = z
   });
 
 export type AddCabinInputsType = z.infer<typeof addCabinFormSchema>;
+
+export const editCabinFormSchema = z
+  .object({
+    name: z
+      .string()
+      .min(3, "Please enter valid name")
+      .max(20, "Please enter name upto 20 characters"),
+    maxCapacity: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
+
+    regularPrice: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
+    discount: z
+      .transform(Number)
+      .pipe(z.number().min(1, "Please enter a valid capacity")),
+    description: z
+      .string()
+      .min(5, "Please enter valid description")
+      .max(100, "Please enter description upto 100 characters"),
+    image: z.instanceof(File, { message: "Please select an image" }).optional(),
+  })
+  .refine((data) => data.discount < data.regularPrice, {
+    message: "Discount must be less than regular price",
+    path: ["discount"],
+  });
+
+export type EditCabinInputs = z.infer<typeof editCabinFormSchema>;
