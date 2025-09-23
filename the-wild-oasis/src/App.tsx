@@ -1,11 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AppLayout from "./components/layout/AppLayout";
+import { Uploader } from "./data/uploader";
 import Bookings from "./pages/Bookings";
 import Cabins from "./pages/Cabins";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
-import Dashboard from "./pages/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/",
+        element: <Login />,
+      },
+      {
+        path: "/upload",
+        element: <Uploader />,
       },
     ],
   },
