@@ -1,0 +1,37 @@
+import { supabase } from "@/lib/supabase";
+import { LoginFormInputs } from "@/lib/zod-schemas/auth.schemas";
+
+export async function login({ email, password }: LoginFormInputs) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function getCurrentUser() {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) return null;
+
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.user;
+}
+
+export async function logout() {
+  await supabase.auth.signOut();
+
+  return true;
+}

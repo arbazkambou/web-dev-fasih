@@ -7,11 +7,16 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Settings from "./pages/Settings";
 import Users from "./pages/Users";
+import ProtectedRoutes from "./components/features/authentication/ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AppLayout />,
+    element: (
+      <ProtectedRoutes>
+        <AppLayout />
+      </ProtectedRoutes>
+    ),
     children: [
       {
         index: true,
@@ -33,19 +38,16 @@ const router = createBrowserRouter([
         path: "/settings",
         element: <Settings />,
       },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/",
-        element: <Login />,
-      },
+
       {
         path: "/upload",
         element: <Uploader />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 

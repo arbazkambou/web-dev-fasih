@@ -18,11 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getBookings } from "@/services/apiBookings";
-import {
-  keepPreviousData,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
 function Booking() {
@@ -30,7 +26,7 @@ function Booking() {
   console.log("search", searchParams);
   const page = searchParams.get("page") || 1;
   const sortBy = searchParams.get("sortBy") || "startDate-asc";
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const filterValue = searchParams.get("status");
 
