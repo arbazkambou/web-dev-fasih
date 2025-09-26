@@ -1,4 +1,10 @@
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -6,18 +12,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Eye, Import, Trash2 } from "lucide-react";
+import { deleteBooking, updateBooking } from "@/services/apiBookings";
 import { Booking } from "@/types/bookings.types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { EllipsisVertical, Import, Trash2 } from "lucide-react";
+import { BookingDetailDialog } from "./BookingDetailDialog";
 
 const bookingColumns = ["CABIN", "GUEST", "DATES", "STATUS", "AMOUNT", ""];
 
 function BookingsTable({ bookings }: { bookings: Booking[] }) {
+  const queryClient = useQueryClient();
+  const { mutate: deleteBookingApi } = useMutation({
+    mutationFn: deleteBooking,
+    mutationKey: ["delete-booking"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-bookings"] });
+    },
+  });
+
+  const { mutate: updateBookingApi } = useMutation({
+    mutationFn: updateBooking,
+    mutationKey: ["update-booking"],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["get-bookings"] });
+    },
+  });
+
   return (
     <div>
       <Table>
@@ -76,15 +96,30 @@ function BookingsTable({ bookings }: { bookings: Booking[] }) {
                     <EllipsisVertical className="h-5 text-zinc-500" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="flex flex-col gap-2 text-zinc-600">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <Eye />
-                      See details
+                    <DropdownMenuItem className="cursor-pointer" asChild>
+                      <BookingDetailDialog booking={booking} />
+                      {/* <Eye />
+                      See details */}
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() =>
+                        updateBookingApi({
+                          id: booking.id,
+                          updatedBooking: {
+                            isPaid: true,
+                            status: "checked-in",
+                          },
+                        })
+                      }
+                    >
                       <Import />
                       Check in
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => deleteBookingApi(booking.id)}
+                    >
                       <Trash2 />
                       Delete booking
                     </DropdownMenuItem>
