@@ -1,3 +1,5 @@
+import { DurationChart } from "@/components/features/dashboard/DurationChart";
+import { SalesChart } from "@/components/features/dashboard/SalesChart";
 import Stats from "@/components/features/dashboard/Stats";
 import { DataTableSkeleton } from "@/components/my-ui/DataTableSkelton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -96,12 +98,20 @@ function Dashboard() {
 
       {isLoading && <DataTableSkeleton />}
       {isAllSuccess && (
-        <Stats
-          cabinCount={cabins?.length}
-          confirmedStays={confirmedStays!}
-          recentBookings={recentBookings}
-          numOfDays={numOfDays}
-        />
+        <div className="flex flex-col gap-10">
+          <Stats
+            cabinCount={cabins?.length}
+            confirmedStays={confirmedStays!}
+            recentBookings={recentBookings}
+            numOfDays={numOfDays}
+          />
+
+          <div className="grid lg:grid-cols-2">
+            <DurationChart confirmedStays={confirmedStays!} />
+          </div>
+
+          <SalesChart numOfDays={numOfDays} recentBookings={recentBookings} />
+        </div>
       )}
 
       {/* <Stats
