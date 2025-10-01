@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { UpdateBooking } from "@/types/bookings.types";
+import { getToday } from "@/utils/helpers";
 
 type GetBookingInputs = {
   page?: number;
@@ -88,6 +89,37 @@ export async function getBooking(id: number) {
   if (error) {
     console.error(error);
     throw new Error("Booking not found");
+  }
+
+  return data;
+}
+
+export async function getBookingsAfterDate(date: string) {
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("created_at, totalPrice, extrasPrice")
+    .gte("created_at", date)
+    .lte("created_at", getToday({ end: true }));
+
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
+  }
+
+  return data;
+}
+
+export async function getStaysAfterDate(date: string) {
+  const { data, error } = await supabase
+    .from("bookings")
+    // .select('*')
+    .select("*, guests(fullName)")
+    .gte("startDate", date)
+    .lte("startDate", getToday());
+
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not get loaded");
   }
 
   return data;
