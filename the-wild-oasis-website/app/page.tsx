@@ -1,6 +1,12 @@
 import bgImg from "@/public/bg.png";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "The Wild Oasis",
+  description: "Welcome to the wild oasis",
+};
 
 export default function Page() {
   return (

@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
-import "./globals.css";
 import { Josefin_Sans } from "next/font/google";
+import "./globals.css";
 
 const JosefinSans = Josefin_Sans({
   subsets: ["latin"],
@@ -14,8 +14,8 @@ function RootLayout({ children }: { children: React.ReactNode }) {
         className={`bg-primary-900 text-accent-100 min-h-screen flex flex-col relative ${JosefinSans.className}`}
       >
         <Header />
-        <div className="flex-1">
-          <div className="max-w-7xl mx-auto px-10 py-6">{children}</div>
+        <div className="flex-1 grid w-full">
+          <div className="max-w-7xl mx-auto px-10 py-6 w-full">{children}</div>
         </div>
       </body>
     </html>
