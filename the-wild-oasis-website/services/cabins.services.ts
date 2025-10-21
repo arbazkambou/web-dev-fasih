@@ -6,6 +6,7 @@ export const getCabins = async function () {
     .select("*")
     .order("name");
 
+  // await new Promise((res) => setTimeout(res, 2000));
   if (error) {
     console.error(error);
     throw new Error("Cabins could not be loaded");
@@ -13,3 +14,20 @@ export const getCabins = async function () {
 
   return data;
 };
+
+export async function getCabinById(id: number) {
+  const { data, error } = await supabase
+    .from("cabins")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  // For testing
+  // await new Promise((res) => setTimeout(res, 1000));
+
+  if (error) {
+    console.error(error);
+  }
+
+  return data;
+}
